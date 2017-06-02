@@ -21,14 +21,15 @@ library(tidyr)
 
 #label plots and plot
     labels <- c("first_snow_day", "last_snow_day", "fss_range", "longest_css_first_day", "longest_css_last_day", "longest_css_day_range", "snow_days", "no_snow_days", "css_segment_num", "mflag", "cloud_days", "tot_css_days")
-    names(NS_snow_depth) <- labels[1:12]
-    plot(NS_snow_depth)
+    names(AK_raster_stack_clip) <- labels[1:12]
+    plot(AK_raster_stack_clip)
 #-------------------------------------------------------------------------------------------------------------
 #Analysis of Permafrost Data
 
 #Plot the North Slope -WARNING takes forever for some reason
     plot(coordinates(activeAK),type="n")
     plot(NS,border="blue",add=TRUE)
+    plot(AK_proj,border="green",add=TRUE)
 
 #Plot active layer sites inside and outside shape file of North Slope 
     points(activeAK[!activeAKInd, ], pch=1, col="gray") #outside
