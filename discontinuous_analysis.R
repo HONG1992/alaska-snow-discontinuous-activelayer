@@ -1,9 +1,10 @@
-#This script contains the analysis of snow seasonality descriptors and permafrost data 
-#using the dataframes created in the file snow_seasonality_proc.R. See snow_seasonality_proc.R and/or
-#comments for more info.
+#This script contains the analysis of snow seasonality descriptors and permafrost
+#active layer depth (discontinuous zone) data using the dataframes created in the
+#file snow_seasonality_proc.R. See snow_seasonality_proc.R and/or comments for
+#more info.
 
 
-#Snow Duration and Active Layer Depth Analysis
+#Snow Duration and Active Layer Depth (Discontinuous Zone) Analysis
 #Earth Lab - Project Permafrost
 #By: Ksenia Lepikhina and Jeffery Thompson (mentor)
 #Copy Right
@@ -20,13 +21,18 @@ library(tidyr)
 #Plot north slope data
 
 #label plots and plot
-    labels <- c("first_snow_day", "last_snow_day", "fss_range", "longest_css_first_day", "longest_css_last_day", "longest_css_day_range", "snow_days", "no_snow_days", "css_segment_num", "mflag", "cloud_days", "tot_css_days")
+#would need to create a for loop in order to see each year. Else it'll just plot
+#whatever file was the last one used.
+    labels <- c("first_snow_day", "last_snow_day", "fss_range",
+                "longest_css_first_day", "longest_css_last_day",
+                "longest_css_day_range", "snow_days", "no_snow_days",
+                "css_segment_num", "mflag", "cloud_days", "tot_css_days")
     names(AK_raster_stack_clip) <- labels[1:12]
     plot(AK_raster_stack_clip)
 #-------------------------------------------------------------------------------------------------------------
 #Analysis of Permafrost Data
 
-#Plot the North Slope -WARNING takes forever for some reason
+#Plot the North Slope -**WARNING** takes forever
     plot(coordinates(activeAK),type="n")
     plot(NS,border="blue",add=TRUE)
     plot(AK_proj,border="green",add=TRUE)
@@ -38,12 +44,12 @@ library(tidyr)
 #Find dates of snow free period (full and continuous) 2 ways
 
 #Snow Year Analysis (FULL snow season)
-    dSFP <- vector("numeric", 42L) #Vector to populate
+    dSFP <- vector("numeric", 25L) #Vector to populate
 #data goes from 2001-2016
     for (i in 1:16)
     {
       #for 42 locations
-      for (j in 1:42)
+      for (j in 1:25)
       {
         #dSFP = 365-(End –Start)
         k <- 365 -(lsSnowAtLoc[j,i]-fsSnowAtLoc[j,i])
@@ -54,10 +60,10 @@ library(tidyr)
     }
 
 #Snow Year Analysis (CONTINUOUS snow season) (same as above w/ continuous instead of full)
-    dSFP2 <- vector("numeric", 42L)
+    dSFP2 <- vector("numeric", 25L)
     for (i in 1:16)
     {
-      for (j in 1:42)
+      for (j in 1:25)
       {
         k <- 365 -(lsSnowContAtLoc[j,i]-fsSnowContAtLoc[j,i])
         dSFP2[j] <- k
@@ -66,10 +72,10 @@ library(tidyr)
     }
 
 #Calendar Year Analysis FULL (lose a year in the math so data goes from 2002-2016)
-    dSFP3 <- vector("numeric", 42L)
+    dSFP3 <- vector("numeric", 25L)
     for (i in 1:15)
     {
-      for (j in 1:42)
+      for (j in 1:25)
       {
         #check if NA
         if (is.na(fsSnowAtLoc[j,i+1]) || is.na(lsSnowAtLoc[j,i]))
@@ -108,10 +114,10 @@ library(tidyr)
     }
 
 #Calendar Year Analysis CONTINUOUS (same format as above except continuous instead of full)
-    dSFP4 <- vector("numeric", 42L)
+    dSFP4 <- vector("numeric", 25L)
     for (i in 1:15)
     {
-      for (j in 1:42)
+      for (j in 1:25)
       {
         if (is.na(fsSnowContAtLoc[j,i+1]) || is.na(lsSnowContAtLoc[j,i]))
         {
@@ -146,20 +152,19 @@ library(tidyr)
 #First attempt at plotting
 
 #test box plots
-  #AL depth vs Years
+#AL depth vs Years
     boxplot(ActiveLayer ~ Year, data=totalsData,main="Active Layer Depths by Year")
-  #Continuous snow free period (snow year) vs year
+#Continuous snow free period (snow year) vs year
     boxplot(CONTSnowFreeSY ~ Year, data=totalsData,main="Continous Snow Free Period - Snow Year")
-  #Continuous snow free period (calendar year) vs year
+#Continuous snow free period (calendar year) vs year
     boxplot(CONTSnowFreeCY ~ Year, data=totalsData,main="Continous Snow Free Period - Cal. Year")
-  #Full snow free period (snow year) vs year
+#Full snow free period (snow year) vs year
     boxplot(FULLSnowFreeSY ~ Year, data=totalsData,main="Full Snow Free Period - Snow Year")
-  #Full snow free period (calendar year) vs year
+#Full snow free period (calendar year) vs year
     boxplot(FULLSnowFreeCY ~ Year, data=totalsData,main="Full Snow Free Period - Cal. Year")
 
-  #Active layer vs Continuous Snow Free Period (snow year)
-    
-    contSnowFreeSnowYearInd <- totalsData$CONTSnowFreeSY >0 & totalsData$CONTSnowFreeSY <250
+#Active layer vs Continuous Snow Free Period (snow year)
+    contSnowFreeSnowYearInd <- totalsData$CONTSnowFreeSY >0 #& totalsData$CONTSnowFreeSY <250
     plot(totalsData[contSnowFreeSnowYearInd,7],totalsData[contSnowFreeSnowYearInd,3],main="Continuous Snow Free Period (Snow Year) vs Active Layer Depth", xlab = "Continuous Snow Free Period in days (Snow Year)", ylab = "Active Layer Depth (cm)")
     contSnowFreeSYReg <- lm(totalsData[contSnowFreeSnowYearInd,3] ~totalsData[contSnowFreeSnowYearInd,7])
     abline(contSnowFreeSYReg)
@@ -192,8 +197,8 @@ library(tidyr)
     for (i in 2:16)
     {
       #set each row to go from a:b each iteration
-      a <- 1+(42*(i-2))
-      b <- 42+(42*(i-2))
+      a <- 1+(25*(i-2))
+      b <- 25+(25*(i-2))
       par(mar=c(4.1, 4.1, 4.1, 8.1), xpd=TRUE)
       plot(totalsData[a:b,6],totalsData[a:b,3])
       legend('topright', inset=c(-0.2,0),names(FULLSnowFreeSY[i]), bty='n', cex=.75)
@@ -205,33 +210,33 @@ library(tidyr)
 #checking if there is any correlation between locations - FULL Snow Year
     fullSnowFreeSnowYearInd <- totalsData$FULLSnowFreeSY<300 #& 67<totalsData$FULLSnowFreeSY
     par(mar=c(4.1, 4.1, 4.1, 8.1), xpd=TRUE)
-    myshapes <- c(21,22,23,24)#,21,22,23,24,21,22,23,24,
+    myshapes <- c(21,22)#,21,22,23,24,21,22,23,24,
     #21,22,23,24,21,22,23,24,21,22,23,24,
     #21,22,23,24,21,22,23,24,21,22,23,24,
     #21,22,23,24,21,22)
-    mycolors <- c("red","red","red","red",
-                  "green","green","green","green",
-                  "orange","orange","orange","orange",
-                  "blue","blue","blue","blue",
-                  "cyan","cyan","cyan","cyan",
-                  "black","black","black","black",
-                  "grey","grey","grey","grey",
-                  "yellow","yellow","yellow","yellow",
-                  "pink","pink","pink","pink",
-                  "darkgreen","darkgreen","darkgreen","darkgreen",
+    mycolors <- c("red","red",
+                  "green","green",
+                  "orange","orange",
+                  "blue","blue",
+                  "cyan","cyan",
+                  "black","black", "black",
+                  "grey","grey",
+                  "yellow","yellow",
+                  "pink","pink",
+                  "darkgreen","darkgreen",
                   "white","white")
     plot(totalsData[fullSnowFreeSnowYearInd,6], totalsData[fullSnowFreeSnowYearInd,3],
          pch=myshapes,bg=mycolors, main = "Full Snow Year, Locations")
-    legend(185,75, inset=c(-0.1,0),totalsData$SiteName[1:42], 
-           pch= myshapes, pt.bg = mycolors,bty='n', cex=.45, ncol=2)
+    legend(275,225, inset=c(-0.1,0),totalsData$SiteName[1:25], 
+           pch= myshapes, pt.bg = mycolors,bty='n', cex=.55, ncol=1)
 
 #Looking at individual locations - FULL Snow Year
     fullSnowFreeSnowYearInd <- totalsData$FULLSnowFreeSY<300 #& 100<totalsData$FULLSnowFreeSY[1:42,1]
 #plot each location on a separate plot
-    for (i in 1:42)
+    for (i in 1:25)
     {
-      locData <- c(i,i+42,i+(2*42), i+(3*42),i+(4*42),i+(5*42),i+(6*42),i+(7*42),
-                   i+(8*42),i+(9*42),i+(10*42),i+(11*42),i+(12*42),i+(13*42),i+(14*42))
+      locData <- c(i,i+25,i+(2*25), i+(3*25),i+(4*25),i+(5*25),i+(6*25),i+(7*25),
+                   i+(8*25),i+(9*25),i+(10*25),i+(11*25),i+(12*25),i+(13*25),i+(14*25))
       #a <- 1+(42*(i-1))
       #b <- 42+(42*(i-1))
       par(mar=c(4.1, 4.1, 4.1, 8.1), xpd=TRUE)
@@ -247,35 +252,29 @@ library(tidyr)
     }
 
 #Plot of largest complete set of active layer points (1996-2016, Barrow-Franklin Buff (1-10))
-    # for (i in 1:10)
-    # {
-    #   a <-1+(10*(i-1))
-    #   b <-10+(10*(i-1)) 
-    # }
+#(Not quite as applicable for the discontinuous dataset)    
+    #pred <- pre.frame$mostCompleteAL...2.
     
-    pred <- pre.frame$mostCompleteAL...2.
-    
-    completeALReg <- lm(mostCompleteAL[,3] ~ mostCompleteAL[,2])
-    pre.frame <- data.frame(mostCompleteAL[,2])
-    pp<- predict(completeALReg, int = "p", newdata = pre.frame)
-    pc<- predict(completeALReg, int = "c", newdata = pre.frame)
-    plot(mostCompleteAL[,2], mostCompleteAL[,3], main = "Active Layer Depth
-         vs Years", xlab = "Years(1996-2016)", ylab = "Active Layer Depth (cm)", 
-         ylim=range(mostCompleteAL[,3], pp, na.rm = T))
-    #abline(completeALReg)
-    matlines(pred, pc, lty = c(1,2,2), col = "blue") #confidence interval
-    matlines(pred,pp, lty = c(1,3,3), col = "black") #prediction interval
-    show(summary(completeALReg))
-    intcp <- coef(completeALReg)[1] 
-    slp <-  coef(completeALReg)[2] 
+    #completeALReg <- lm(mostCompleteAL[,3] ~ mostCompleteAL[,2])
+    #pre.frame <- data.frame(mostCompleteAL[,2])
+    #pp<- predict(completeALReg, int = "p", newdata = pre.frame)
+    #pc<- predict(completeALReg, int = "c", newdata = pre.frame)
+    #plot(mostCompleteAL[,2], mostCompleteAL[,3], main = "Active Layer Depth
+    #     vs Years", xlab = "Years(1996-2016)", ylab = "Active Layer Depth (cm)", 
+    #     ylim=range(mostCompleteAL[,3], pp, na.rm = T))
+    #matlines(pred, pc, lty = c(1,2,2), col = "blue") #confidence interval
+    #matlines(pred,pp, lty = c(1,3,3), col = "black") #prediction interval
+    #show(summary(completeALReg))
+    #intcp <- coef(completeALReg)[1] 
+    #slp <-  coef(completeALReg)[2] 
     
 #------------------------------------------------------------------------------------
 #Freeze and Melt periods
-    dSFP5 <- vector("numeric", 42L) #new vector
+    dSFP5 <- vector("numeric", 25L) #new vector
     #2002-2016
     for (i in 1:15)
     {
-      for (j in 1:42)
+      for (j in 1:25)
       {
         if (is.na(fsSnowContAtLoc[j,i]) || is.na(lsSnowContAtLoc[j,i]))
         {
@@ -298,10 +297,10 @@ library(tidyr)
     }
     
     #almost the same as above
-    dSFP6 <- vector("numeric", 42L)
+    dSFP6 <- vector("numeric", 25L)
     for (i in 1:15)
     {
-      for (j in 1:42)
+      for (j in 1:25)
       {
         if (is.na(fsSnowContAtLoc[j,i]) || is.na(lsSnowContAtLoc[j,i]))
         {
@@ -327,13 +326,13 @@ library(tidyr)
            pch=c(0,1,2,5,6,15,16,17,18,19,20,21,22,23,24), pt.bg=c("red","red","red","red"), bty='n', cex=.75)
     freezeReg <- lm(meltFreezeAL[freeze,3] ~ (meltFreezeAL[freeze,4]+meltFreezeAL[freeze,5] +meltFreezeAL[freeze,6]))
     abline(freezeReg)
-    summary(freezeReg) #BEST correation R^2 7.89%
+    summary(freezeReg) 
 
 #Looking at individual years -AL and duration of continuous snow period <-(meltFreezeLineIndiv)
     for (i in 2:16)
     {
-      a <- 1+(42*(i-2))
-      b <- 42+(42*(i-2))
+      a <- 1+(25*(i-2))
+      b <- 25+(25*(i-2))
       par(mar=c(4.1, 4.1, 4.1, 8.1), xpd=TRUE)
       plot(meltFreezeAL[a:b,6],meltFreezeAL[a:b,3], xlab = "Number of Snow Days", ylab = "Active Layer Depth")
       legend('topright', inset=c(-0.2,0),names(FULLSnowFreeSY[i]), bty='n', cex=.75)
@@ -344,10 +343,10 @@ library(tidyr)
     
     
 #Looking at individual locations -AL and duration of continuous snow period <-(meltFreezeLineIndiv)
-    for (i in 1:42)
+    for (i in 1:25)
     {
-      locData2 <- c(i,i+42,i+(2*42), i+(3*42),i+(4*42),i+(5*42),i+(6*42),i+(7*42),
-                   i+(8*42),i+(9*42),i+(10*42),i+(11*42),i+(12*42),i+(13*42),i+(14*42))
+      locData2 <- c(i,i+25,i+(2*25), i+(3*25),i+(4*25),i+(5*25),i+(6*25),i+(7*25),
+                   i+(8*25),i+(9*25),i+(10*25),i+(11*25),i+(12*25),i+(13*25),i+(14*25))
       par(mar=c(4.1, 4.1, 4.1, 8.1), xpd=TRUE)
       if (all(is.na(meltFreezeAL[locData2,3])))
       {
@@ -361,15 +360,14 @@ library(tidyr)
       {
         if (all(!is.na(meltFreezeAL[locData2,3])))
         {
-        plot(meltFreezeAL[locData2,6],meltFreezeAL[locData2,3], xlab())
+        plot(meltFreezeAL[locData2,6],meltFreezeAL[locData2,3])
         legend('topright', inset=c(-0.2,0),meltFreezeAL$SiteName[i], bty='n', cex=.75)
         meltFreezeLineIndiv <- lm(meltFreezeAL[locData2,3] ~ meltFreezeAL[locData2,6])#meltFreezeAL[a:b,4]+ meltFreezeAL[a:b,5]+meltFreezeAL[a:b,6])
         abline(meltFreezeLineIndiv)
         #show(summary(meltFreezeLineIndiv))
         }
       }
-      show(locData2)
-    } #each year is ok...?
+    }
     
    
 
@@ -382,7 +380,7 @@ library(tidyr)
 #duration of continuous snow period vs Years
     boxplot(durationContSnowPer ~ Year, data=meltFreezeAL,main="Duration of Cont Snow Per - Year")
 
-#look only at RED (see original data) data (*also see temp for the dataframe); temp = red coloring
+#look only at RED (see original data) (Doesn't matter they are all red)
     plot(temp[,6], temp[,3], main = "ActiveLayer vs Duration of Continuous
          Snow Period", xlab = "Duration of Continuous Snow Period", ylab = "Active Layer Depth")
     tempReg <- lm(temp[,3] ~ (temp[,6]))
@@ -407,37 +405,38 @@ library(tidyr)
 # make a pairs plot for numeric data
 
 #active layer temporal
+    ALDataFrame %>%
+      select(starts_with("1"), starts_with("2"))  %>% #one_of(vars)) %>% #
+      pairs
+    
+      
+#active layer spatial    
+    ALDataFrame %>%
+      gather(year, value, -SiteCode, -SiteName, -Latitude, -Longitude) %>%
+      ggplot(aes(as.numeric(year), value, color = SiteName)) + 
+      geom_line() +
+      labs(title = "Active Layer Spatial")
+    
+#longest continuous snow season day range (layer 7) temporal
+    numSDAtLoc %>%
+      select(starts_with("2")) %>%
+      pairs
+    
+#longest continuous snow season day range (layer 7) spatial    
+    numSDAtLoc %>%
+      gather(year, value, -SiteName) %>%
+      ggplot(aes(as.numeric(year), value, color = SiteName)) + 
+      geom_line()+
+      labs(title = "Number of Snow Days Temporal")
+    
+#total continuous snow season days (layer 12) temporal
+    totNumDaysCSSAtLoc %>%
+      select(starts_with("2")) %>%
+      pairs
 
-ALDataFrame %>%
-  select(starts_with("1"), starts_with("2"))  %>% #one_of(vars)) %>% #
-  pairs
-
-  
-
-ALDataFrame %>%
-  gather(year, value, -SiteCode, -SiteName, -Latitude, -Longitude) %>%
-  ggplot(aes(as.numeric(year), value, color = SiteName)) + 
-  geom_line() +
-  labs(title = "Active Layer Spatial")
-
-#layer 7 temporal
-numSDAtLoc %>%
-  select(starts_with("2")) %>%
-  pairs
-
-numSDAtLoc %>%
-  gather(year, value, -SiteName) %>%
-  ggplot(aes(as.numeric(year), value, color = SiteName)) + 
-  geom_line()+
-  labs(title = "Number of Snow Days Temporal")
-
-#layer 12 temporal
-totNumDaysCSSAtLoc %>%
-  select(starts_with("2")) %>%
-  pairs
-
-totNumDaysCSSAtLoc %>%
-  gather(year, value, -SiteName) %>%
-  ggplot(aes(as.numeric(year), value, color = SiteName)) + 
-  geom_line() +
-  labs(title = "Number of days with CSS Segments Temporal")
+#total continuous snow season days (layer 12) spatial    
+    totNumDaysCSSAtLoc %>%
+      gather(year, value, -SiteName) %>%
+      ggplot(aes(as.numeric(year), value, color = SiteName)) + 
+      geom_line() +
+      labs(title = "Number of days with CSS Segments Temporal")
