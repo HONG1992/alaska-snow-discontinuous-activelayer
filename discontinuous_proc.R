@@ -23,7 +23,14 @@ library(psych)
       cells<-rasterize(shape,cropped)
       cropped*cells
     }
-
+    
+#Function to obtain R-Squared from the data 
+    rsq <- function(formula, data, indices) {
+      d <- data[indices,] # allows boot to select sample 
+      fit <- lm(formula, data=d)
+      return(summary(fit)$r.square)
+    } 
+    
 #in folder, fileNames are only the ones that end in .tif
     fileNames <- list.files(pattern = ".tif")
 

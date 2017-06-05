@@ -17,6 +17,7 @@ library(ggplot2)
 library(psych)
 library(dplyr)
 library(tidyr)
+library(boot)
 #-------------------------------------------------------------------------------------------------------------
 #Plot north slope data
 
@@ -339,7 +340,7 @@ library(tidyr)
       meltFreezeLineIndiv <- lm(meltFreezeAL[a:b,3] ~ meltFreezeAL[a:b,6])#meltFreezeAL[a:b,4]+ meltFreezeAL[a:b,5]+meltFreezeAL[a:b,6])
       abline(meltFreezeLineIndiv)
       show(summary(meltFreezeLineIndiv))
-    } #each year is ok...?
+    } 
     
     
 #Looking at individual locations -AL and duration of continuous snow period <-(meltFreezeLineIndiv)
@@ -386,7 +387,7 @@ library(tidyr)
     tempReg <- lm(temp[,3] ~ (temp[,6]))
     abline(tempReg, method="spearman")
     summary(tempReg)
-    corr.test(temp[3],temp[6], method="spearman")  #NOT a very good correlation
+    corr.test(temp[3],temp[6], method="spearman")
 
 #1000 method (The red ones in the data using the 1000 method)
     plot(thousandDF[,4], thousandDF[,3], main = "1000x1000m grid:
@@ -402,6 +403,7 @@ library(tidyr)
     vars <- c("1990", "1991","1992","1993","1994","1995","1996","1997","1998","1999","2000","2001",
               "2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013",
               "2014","2015","2016")   
+#------------------------------------------------------------------------------------
 # make a pairs plot for numeric data
 
 #active layer temporal
@@ -440,3 +442,14 @@ library(tidyr)
       ggplot(aes(as.numeric(year), value, color = SiteName)) + 
       geom_line() +
       labs(title = "Number of days with CSS Segments Temporal")
+    
+#------------------------------------------------------------------------------------
+#test bootstrap
+
+    results <- boot(data=totalsData, statistic=rsq, 
+                    R=1000, formula=CONTSnowFreeSY ~ Year)
+    plot(results, rm.na=TRUE)
+    boot.ci(results, type="bca")
+    
+
+    
