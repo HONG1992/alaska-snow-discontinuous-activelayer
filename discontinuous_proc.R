@@ -29,7 +29,26 @@ library(psych)
       d <- data[indices,] # allows boot to select sample 
       fit <- lm(formula, data=d)
       return(summary(fit)$r.square)
-    } 
+    }
+
+#Function for mean    
+    samplemean <- function(x, d) {
+      return(mean(x[d]))
+    }
+    
+    # sample_mean = function(formula, data, indices){
+    #   sample = data[indices, ]
+    #   fit <- lm(formula, data=sample)
+    #   bar = mean(sample)
+    #   return(summary(bar)$r.mean)
+    #   #return(bar)
+    # }
+
+#Function for median    
+    samplemedian <- function(x, d) {
+      return(median(x[d]))
+    }
+    
     
 #in folder, fileNames are only the ones that end in .tif
     fileNames <- list.files(pattern = ".tif")
@@ -488,21 +507,21 @@ library(psych)
 #This section doesn't really have a purpose since there isn't exactly any complete record
 
 #Plot of largest complete set of active layer points (1996-2016, Barrow-Franklin Buff (1-10))
-    #r=210
-    #mostCompleteAL <- data.frame("SiteName"=rep(0,r), "Year"=rep(0,r),
-    #                           "ActiveLayer"=rep(0,r));
-    #colnames(mostCompleteAL) <- c("SiteName","Year","ActiveLayer")
-    #for (i in 1:21)
-    #{
-    #  a <- 1+(10*(i-1))
-    #  b <- 10+(10*(i-1))
-    #  #Site Names
-    #  mostCompleteAL[a:b,1] <- ALDataFrame[1:10,2]
-    #  #Years
-    #  mostCompleteAL[a:b,2] <- i+1995
-    #  #Active Layer Depth
-    #  mostCompleteAL[a:b,3] <- ALDataFrame[1:10, i+10]
-    #}
+    r=108
+    mostCompleteAL <- data.frame("SiteName"=rep(0,r), "Year"=rep(0,r),
+                                "ActiveLayer"=rep(0,r));
+    colnames(mostCompleteAL) <- c("SiteName","Year","ActiveLayer")
+    for (i in 1:27)
+    {
+      a <- 1+(4*(i-1))
+      b <- 4+(4*(i-1))
+      #Site Names
+      mostCompleteAL[a:b,1] <- ALDataFrame[1:4,2]
+      #Years
+      mostCompleteAL[a:b,2] <- i+1989
+      #Active Layer Depth
+      mostCompleteAL[a:b,3] <- ALDataFrame[1:4, i+4]
+    }
 
 #------------------------------------------------------------------------------------
 #Freeze and Melt periods

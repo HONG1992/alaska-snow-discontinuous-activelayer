@@ -256,7 +256,7 @@ library(boot)
 #(Not quite as applicable for the discontinuous dataset)    
     #pred <- pre.frame$mostCompleteAL...2.
     
-    #completeALReg <- lm(mostCompleteAL[,3] ~ mostCompleteAL[,2])
+    completeALReg <- lm(mostCompleteAL[,3] ~ mostCompleteAL[,2])
     #pre.frame <- data.frame(mostCompleteAL[,2])
     #pp<- predict(completeALReg, int = "p", newdata = pre.frame)
     #pc<- predict(completeALReg, int = "c", newdata = pre.frame)
@@ -446,10 +446,19 @@ library(boot)
 #------------------------------------------------------------------------------------
 #test bootstrap
 
-    results <- boot(data=totalsData, statistic=rsq, 
+#continuous snow free snow year and year
+    bootContSYvsYear <- boot(data=totalsData, statistic = rsq, 
                     R=1000, formula=CONTSnowFreeSY ~ Year)
-    plot(results, rm.na=TRUE)
-    boot.ci(results, type="bca")
+    summary(bootContSYvsYear)
+    plot(bootContSYvsYear, rm.na=TRUE)
+    boot.ci(bootContSYvsYear, type="bca")
     
+#AL and year
+    bootALvsYear <- boot(data=totalsData, statistic=rsq, 
+                    R=1000, formula= ActiveLayer ~ Year)
+    summary(bootALvsYear)
+    plot(bootALvsYear, rm.na=TRUE)
+    boot.ci(bootALvsYear, type="bca")
 
+    
     
